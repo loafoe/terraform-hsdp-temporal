@@ -2,12 +2,13 @@ locals {
   docker_cmd = <<EOF
     docker run -d --restart always -v temporal:/temporal \
       -e DB=postgres \
+      -e DBNAME=hsdp_pg \
       -e DB_PORT=5432 \
       -e AUTO_SETUP=true \
       -e POSTGRES_USER=${cloudfoundry_service_key.temporal_db_key.credentials.username} \
       -e POSTGRES_PWD=${cloudfoundry_service_key.temporal_db_key.credentials.password} \
-      -e POSTGRES_SEEDS=${cloudfoundry_service_key.temporal_db_key.credentials.hostname} \
-      -p9200:9090 \
+      -e POSTGRES_SEEDS=${cloudfoundry_service_key.temporal_db_key.credentials.hostname}
+      -p9200:7233 \
       ${var.temporal_image}
 EOF
 }
@@ -32,7 +33,7 @@ resource "hsdp_container_host" "temporal" {
   provisioner "remote-exec" {
     inline = [
       "docker volume create temporal",
-      "docker run -d --restart always -v temporal:/temporal -e DB=postgres -e DB_PORT=5432 -e AUTO_SETUP=true -e POSTGRES_USER=${cloudfoundry_service_key.temporal_db_key.credentials.username} -e POSTGRES_PWD=${cloudfoundry_service_key.temporal_db_key.credentials.password} -e POSTGRES_SEEDS=${cloudfoundry_service_key.temporal_db_key.credentials.hostname} -p9200:9090 ${var.temporal_image}"
+      "docker run -d --restart always -v temporal:/temporal -e DB=postgres -e DBNAME=hsdp_pg -e DB_PORT=5432 -e AUTO_SETUP=true -e POSTGRES_USER=${cloudfoundry_service_key.temporal_db_key.credentials.username} -e POSTGRES_PWD=${cloudfoundry_service_key.temporal_db_key.credentials.password} -e POSTGRES_SEEDS=${cloudfoundry_service_key.temporal_db_key.credentials.hostname} -p9200:7233 ${var.temporal_image}"
     ]
   }
 }

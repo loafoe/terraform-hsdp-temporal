@@ -1,5 +1,5 @@
 resource "cloudfoundry_app" "temporal_web" {
-  name       = "nginx-${random_id.id.hex}"
+  name       = "temporal-web"
   space      = cloudfoundry_space.space.id
   memory     = 1024
   disk_quota = 2048

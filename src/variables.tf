@@ -13,7 +13,6 @@ variable "volume_size" {
 variable "user_groups" {
   description = "User groups to assign to cluster"
   type        = list(string)
-  default     = []
 }
 
 variable "user" {
