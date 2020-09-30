@@ -1,9 +1,9 @@
-output "prometheus_ip" {
+output "temporal_ip" {
   description = "Private IP address of Temporal server"
   value       = hsdp_container_host.temporal.private_ip
 }
 
-output "prometheus_id" {
+output "temporal_id" {
   description = "Server ID of prometheus"
   value       = random_id.id.hex
 }

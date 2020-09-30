@@ -34,6 +34,7 @@ module "temporal" {
 |------|---------|
 | cloudfoundry | >= 0.12.4 |
 | hsdp | >= 0.6.3 |
+| null | n/a |
 | random | n/a |
 
 ## Inputs
@@ -46,19 +47,19 @@ module "temporal" {
 | org\_name | Cloudfoundry ORG name to use for reverse proxy | `string` | n/a | yes |
 | postgres\_plan | The HSDP-RDS PostgreSQL plan to use | `string` | `"postgres-medium-dev"` | no |
 | private\_key | Private key for SSH access (should not have a passphrase) | `string` | n/a | yes |
-| temporal\_image | The Temporal server image to use | `string` | `"temporalio/server:0.29"` | no |
-| temporal\_web\_image | The Temporal web image to use | `string` | `"temporalio/web:0.29.1"` | no |
+| temporal\_image | The Temporal server image to use | `string` | `"temporalio/auto-setup:1.0.0"` | no |
+| temporal\_web\_image | The Temporal web image to use | `string` | `"temporalio/web:1.0.0"` | no |
 | user | LDAP user to use for connections | `string` | n/a | yes |
-| user\_groups | User groups to assign to cluster | `list(string)` | `[]` | no |
+| user\_groups | User groups to assign to cluster | `list(string)` | n/a | yes |
 | volume\_size | The volume size to use in GB | `number` | `50` | no |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
-| prometheus\_id | Server ID of prometheus |
-| prometheus\_ip | Private IP address of Prometheus server |
-| prometheus\_url | The cloud foundry URL of prometheus |
+| temporal\_id | Server ID of prometheus |
+| temporal\_ip | Private IP address of Temporal server |
+| temporal\_web\_url | The cloud foundry URL of Temporal web |
 
 # Getting help / Contact
 andy.lo-a-foe@philips.com
