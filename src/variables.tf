@@ -43,13 +43,13 @@ variable "app_domain" {
 variable "temporal_image" {
   description = "The Temporal server image to use"
   type        = string
-  default     = "temporalio/server:0.29"
+  default     = "temporalio/auto-setup:1.0.0"
 }
 
 variable "temporal_web_image" {
   description = "The Temporal web image to use"
   type        = string
-  default     = "temporalio/web:0.29.1"
+  default     = "temporalio/web:1.0.0"
 }
 
 variable "postgres_plan" {
