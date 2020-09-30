@@ -1,0 +1,27 @@
+#!/bin/bash
+
+kill_temporal() {
+  echo Killing temporal...
+  docker kill temporal
+  docker rm temporal
+}
+
+start_temporal() {
+  echo Starting temporal...
+  docker run -d -v temporal:/temporal \
+    --restart always \
+    --name temporal \
+    --env ALLOW_PLAINTEXT_LISTENER=yes \
+    --env DB=postgres \
+    --env DB_PORT=5432 \
+    --env AUTO_SETUP=true \
+    --env POSTGRES_USER=${postgres_username} \
+    --env POSTGRES_PWD=${postgres_password} \
+    --env POSTGRES_SEEDS=${postgres_hostname} \
+    -p9200:7233 \
+    ${temporal_image}
+}
+
+kill_temporal
+
+start_temporal

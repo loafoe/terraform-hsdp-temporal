@@ -1,18 +1,3 @@
-locals {
-  docker_cmd = <<EOF
-    docker run -d --restart always -v temporal:/temporal \
-      -e DB=postgres \
-      -e DBNAME=hsdp_pg \
-      -e DB_PORT=5432 \
-      -e AUTO_SETUP=true \
-      -e POSTGRES_USER=${cloudfoundry_service_key.temporal_db_key.credentials.username} \
-      -e POSTGRES_PWD=${cloudfoundry_service_key.temporal_db_key.credentials.password} \
-      -e POSTGRES_SEEDS=${cloudfoundry_service_key.temporal_db_key.credentials.hostname}
-      -p9200:7233 \
-      ${var.temporal_image}
-EOF
-}
-
 resource "hsdp_container_host" "temporal" {
   name          = "temporal-${random_id.id.hex}.dev"
   volumes       = 1
@@ -32,8 +17,39 @@ resource "hsdp_container_host" "temporal" {
 
   provisioner "remote-exec" {
     inline = [
-      "docker volume create temporal",
-      "docker run -d --restart always -v temporal:/temporal -e DB=postgres -e DBNAME=hsdp_pg -e DB_PORT=5432 -e AUTO_SETUP=true -e POSTGRES_USER=${cloudfoundry_service_key.temporal_db_key.credentials.username} -e POSTGRES_PWD=${cloudfoundry_service_key.temporal_db_key.credentials.password} -e POSTGRES_SEEDS=${cloudfoundry_service_key.temporal_db_key.credentials.hostname} -p9200:7233 ${var.temporal_image}"
+      "docker volume create temporal"
+    ]
+  }
+}
+
+resource "null_resource" "server" {
+  triggers = {
+    cluster_instance_ids = hsdp_container_host.temporal.id
+  }
+
+  connection {
+    bastion_host = var.bastion_host
+    host         = hsdp_container_host.temporal.private_ip
+    user         = var.user
+    private_key  = var.private_key
+    script_path  = "/home/${var.user}/bootstrap.bash"
+  }
+
+  provisioner "file" {
+    content = templatefile("${path.module}/scripts/bootstrap.sh.tmpl", {
+      postgres_username = cloudfoundry_service_key.temporal_db_key.credentials.username
+      postgres_password = cloudfoundry_service_key.temporal_db_key.credentials.password
+      postgres_hostname = cloudfoundry_service_key.temporal_db_key.credentials.hostname
+      temporal_image = var.temporal_image
+    })
+    destination = "/home/${var.user}/bootstrap.sh"
+  }
+
+  provisioner "remote-exec" {
+    # Bootstrap script called with private_ip of each node in the cluster
+    inline = [
+      "chmod +x /home/${var.user}/bootstrap.sh",
+      "/home/${var.user}/bootstrap.sh"
     ]
   }
 }
