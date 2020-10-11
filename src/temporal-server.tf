@@ -40,9 +40,25 @@ resource "null_resource" "server" {
       postgres_username = cloudfoundry_service_key.temporal_db_key.credentials.username
       postgres_password = cloudfoundry_service_key.temporal_db_key.credentials.password
       postgres_hostname = cloudfoundry_service_key.temporal_db_key.credentials.hostname
+      require_client_auth = "false"
       temporal_image = var.temporal_image
     })
     destination = "/home/${var.user}/bootstrap.sh"
+  }
+
+  provisioner "file" {
+    content = tls_private_key.key.private_key_pem
+    destination = "/home/${var.user}/private_key.pem"
+  }
+
+  provisioner "file" {
+    content = tls_self_signed_cert.server.cert_pem
+    destination = "/home/${var.user}/server_cert.pem"
+  }
+
+  provisioner "file" {
+    content = tls_self_signed_cert.client.cert_pem
+    destination = "/home/${var.user}/client_cert.pem"
   }
 
   provisioner "remote-exec" {

@@ -1,7 +1,7 @@
 resource "cloudfoundry_app" "temporal_web" {
   name       = "temporal-web"
   space      = cloudfoundry_space.space.id
-  memory     = 1024
+  memory     = 512
   disk_quota = 2048
   docker_image = var.temporal_web_image
   environment = {
