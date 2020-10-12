@@ -39,7 +39,7 @@ resource "null_resource" "worker" {
       temporal_hostport   = "${hsdp_container_host.temporal.private_ip}:2181"
       docker_host         = "tcp://${hsdp_container_host.temporal_worker.private_ip}:2375"
       require_client_auth = "false"
-      enable_fluentd      = "false"
+      enable_fluentd      = var.hsdp_product_key == "" ? "false" : "true"
       agent_image         = var.agent_image
     })
     destination = "/home/${var.user}/bootstrap-worker.sh"
