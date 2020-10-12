@@ -1,11 +1,10 @@
-resource "hsdp_container_host" "temporal" {
-  name          = "temporal-${random_id.id.hex}.dev"
+resource "hsdp_container_host" "temporal_worker" {
+  name          = "temporal-worker-${random_id.id.hex}.dev"
   volumes       = 1
   volume_size   = var.volume_size
-  instance_type = var.instance_type
+  instance_type = var.worker_instance_type
 
-  user_groups     = var.user_groups
-  security_groups = ["analytics"]
+  user_groups = var.user_groups
 
   connection {
     bastion_host = var.bastion_host
@@ -17,33 +16,33 @@ resource "hsdp_container_host" "temporal" {
 
   provisioner "remote-exec" {
     inline = [
-      "docker volume create temporal"
+      "docker volume create agent"
     ]
   }
 }
 
-resource "null_resource" "server" {
+resource "null_resource" "worker" {
   triggers = {
-    cluster_instance_ids = hsdp_container_host.temporal.id
+    cluster_instance_ids = hsdp_container_host.temporal_worker.id
   }
 
   connection {
     bastion_host = var.bastion_host
-    host         = hsdp_container_host.temporal.private_ip
+    host         = hsdp_container_host.temporal_worker.private_ip
     user         = var.user
     private_key  = var.private_key
     script_path  = "/home/${var.user}/bootstrap.bash"
   }
 
   provisioner "file" {
-    content = templatefile("${path.module}/scripts/bootstrap.sh.tmpl", {
-      postgres_username   = cloudfoundry_service_key.temporal_db_key.credentials.username
-      postgres_password   = cloudfoundry_service_key.temporal_db_key.credentials.password
-      postgres_hostname   = cloudfoundry_service_key.temporal_db_key.credentials.hostname
+    content = templatefile("${path.module}/scripts/bootstrap-worker.sh.tmpl", {
+      temporal_hostport   = "${hsdp_container_host.temporal.private_ip}:9200"
+      docker_host         = "tcp://${hsdp_container_host.temporal_worker.private_ip}:2375"
       require_client_auth = "false"
-      temporal_image      = var.temporal_image
+      enable_fluentd      = "false"
+      agent_image         = var.agent_image
     })
-    destination = "/home/${var.user}/bootstrap.sh"
+    destination = "/home/${var.user}/bootstrap-worker.sh"
   }
 
   provisioner "file" {
@@ -64,8 +63,8 @@ resource "null_resource" "server" {
   provisioner "remote-exec" {
     # Bootstrap script called with private_ip of each node in the cluster
     inline = [
-      "chmod +x /home/${var.user}/bootstrap.sh",
-      "/home/${var.user}/bootstrap.sh"
+      "chmod +x /home/${var.user}/bootstrap-worker.sh",
+      "/home/${var.user}/bootstrap-worker.sh"
     ]
   }
 }

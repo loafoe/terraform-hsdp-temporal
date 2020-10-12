@@ -1,0 +1,32 @@
+#!/bin/bash
+
+kill_agent() {
+  echo Killing agent...
+  docker kill agent
+  docker rm agent
+}
+
+# --env TEMPORAL_TLS_FRONTEND_CERT=/temporal/server_cert.pem \
+#    --env TEMPORAL_TLS_FRONTEND_KEY=/temporal/private_key.pem \
+#    --env TEMPORAL_TLS_REQUIRE_CLIENT_AUTH=${require_client_auth} \
+#    --env TEMPORAL_TLS_CLIENT1_CA_CERT=/temporal/client_cert.pem \
+
+start_agent() {
+  echo Starting agent...
+  docker run -d -v agent:/agent \
+    --restart always \
+    --name agent \
+    --env ALLOW_PLAINTEXT_LISTENER=yes \
+    --env AGENT_ENABLE_FLUENTD={enable_fluentd} \
+    --env DOCKER_HOST=${docker_host} \
+    --env AGENT_TEMPORAL_HOSTPORT=${temporal_hostport} \
+    ${agent_image}
+  echo Copying certs...
+  docker cp server_cert.pem agent:/agent
+  docker cp client_cert.pem agent:/agent
+  docker cp private_key.pem agent:/agent
+}
+
+kill_agent
+
+start_agent

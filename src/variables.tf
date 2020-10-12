@@ -43,7 +43,7 @@ variable "app_domain" {
 variable "temporal_image" {
   description = "The Temporal server image to use"
   type        = string
-  default     = "temporalio/auto-setup:1.0.0"
+  default     = "loafoe/auto-setup:0.0.1"
 }
 
 variable "temporal_web_image" {
@@ -52,8 +52,26 @@ variable "temporal_web_image" {
   default     = "temporalio/web:1.0.0"
 }
 
+variable "agent_image" {
+  description = "Agent image"
+  type        = string
+  default     = "loafoe/ch-agent:0.0.37"
+}
+
 variable "postgres_plan" {
   description = "The HSDP-RDS PostgreSQL plan to use"
-  type = string
-  default = "postgres-medium-dev"
+  type        = string
+  default     = "postgres-medium-dev"
+}
+
+variable "workers" {
+  description = "Number of worker nodes to spin up"
+  type        = number
+  default     = 1
+}
+
+variable "worker_instance_type" {
+  description = "Instance type of worker nodes"
+  type        = string
+  default     = "m5.xlarge"
 }

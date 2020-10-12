@@ -1,11 +1,11 @@
 resource "cloudfoundry_app" "temporal_web" {
-  name       = "temporal-web"
-  space      = cloudfoundry_space.space.id
-  memory     = 512
-  disk_quota = 2048
+  name         = "temporal-web"
+  space        = cloudfoundry_space.space.id
+  memory       = 512
+  disk_quota   = 2048
   docker_image = var.temporal_web_image
   environment = {
-    TEMPORAL_GRPC_ENDPOINT = "${hsdp_container_host.temporal.private_ip}:9200"
+    TEMPORAL_GRPC_ENDPOINT    = "${hsdp_container_host.temporal.private_ip}:9200"
     TEMPORAL_PERMIT_WRITE_API = "true"
   }
 
