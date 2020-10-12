@@ -36,13 +36,25 @@ resource "null_resource" "worker" {
 
   provisioner "file" {
     content = templatefile("${path.module}/scripts/bootstrap-worker.sh.tmpl", {
-      temporal_hostport   = "${hsdp_container_host.temporal.private_ip}:9200"
+      temporal_hostport   = "${hsdp_container_host.temporal.private_ip}:2181"
       docker_host         = "tcp://${hsdp_container_host.temporal_worker.private_ip}:2375"
       require_client_auth = "false"
       enable_fluentd      = "false"
       agent_image         = var.agent_image
     })
     destination = "/home/${var.user}/bootstrap-worker.sh"
+  }
+
+  provisioner "file" {
+    content = templatefile("${path.module}/scripts/bootstrap-fluent-bit.sh.tmpl", {
+      ingestor_host    = var.hsdp_ingestor_host
+      shared_key       = var.hsdp_shared_key
+      secret_key       = var.hsdp_secret_key
+      product_key      = var.hsdp_product_key
+      custom_field     = var.hsdp_custom_field
+      fluent_bit_image = var.fluent_bit_image
+    })
+    destination = "/home/${var.user}/bootstrap-fluent-bit.sh"
   }
 
   provisioner "file" {
@@ -63,6 +75,8 @@ resource "null_resource" "worker" {
   provisioner "remote-exec" {
     # Bootstrap script called with private_ip of each node in the cluster
     inline = [
+      "chmod +x /home/${var.user}/bootstrap-fluent-bit.sh",
+      "/home/${var.user}/bootstrap-fluent-bit.sh",
       "chmod +x /home/${var.user}/bootstrap-worker.sh",
       "/home/${var.user}/bootstrap-worker.sh"
     ]

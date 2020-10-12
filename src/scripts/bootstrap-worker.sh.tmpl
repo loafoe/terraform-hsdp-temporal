@@ -17,7 +17,7 @@ start_agent() {
     --restart always \
     --name agent \
     --env ALLOW_PLAINTEXT_LISTENER=yes \
-    --env AGENT_ENABLE_FLUENTD={enable_fluentd} \
+    --env AGENT_ENABLE_FLUENTD=${enable_fluentd} \
     --env DOCKER_HOST=${docker_host} \
     --env AGENT_TEMPORAL_HOSTPORT=${temporal_hostport} \
     ${agent_image}

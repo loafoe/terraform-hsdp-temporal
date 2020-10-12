@@ -75,3 +75,39 @@ variable "worker_instance_type" {
   type        = string
   default     = "m5.xlarge"
 }
+
+variable "fluent_bit_image" {
+  description = "Fluent-bit image"
+  type        = string
+  default     = "loafoe/fluent-bit-out-hsdp:0.0.13"
+}
+
+variable "hsdp_ingestor_host" {
+  description = "HSDP Logging ingestor host"
+  type        = string
+  default     = "https://logingestor2-client-test.us-east.philips-healthsuite.com"
+}
+
+variable "hsdp_shared_key" {
+  description = "HSDP Logging shared key"
+  type        = string
+  default     = ""
+}
+
+variable "hsdp_secret_key" {
+  description = "HSDP Logging secret key"
+  type        = string
+  default     = ""
+}
+
+variable "hsdp_product_key" {
+  description = "HSDP Logging product key"
+  type        = string
+  default     = ""
+}
+
+variable "hsdp_custom_field" {
+  description = "Post structured JSON message to HSDP Logging custom field"
+  type        = string
+  default     = "true"
+}
