@@ -1,5 +1,6 @@
 resource "hsdp_container_host" "temporal_worker" {
-  name          = "temporal-worker-${random_id.id.hex}.dev"
+  count         = var.workers
+  name          = "temporal-worker-${count.index}-${random_id.id.hex}.dev"
   volumes       = 1
   volume_size   = var.volume_size
   instance_type = var.worker_instance_type
@@ -22,13 +23,15 @@ resource "hsdp_container_host" "temporal_worker" {
 }
 
 resource "null_resource" "worker" {
+  count = var.workers
+
   triggers = {
-    cluster_instance_ids = hsdp_container_host.temporal_worker.id
+    cluster_instance_ids = element(hsdp_container_host.temporal_worker.*.id, count.index)
   }
 
   connection {
     bastion_host = var.bastion_host
-    host         = hsdp_container_host.temporal_worker.private_ip
+    host         = element(hsdp_container_host.temporal_worker.*.private_ip, count.index)
     user         = var.user
     private_key  = var.private_key
     script_path  = "/home/${var.user}/bootstrap.bash"
@@ -37,7 +40,7 @@ resource "null_resource" "worker" {
   provisioner "file" {
     content = templatefile("${path.module}/scripts/bootstrap-worker.sh.tmpl", {
       temporal_hostport   = "${hsdp_container_host.temporal.private_ip}:2181"
-      docker_host         = "tcp://${hsdp_container_host.temporal_worker.private_ip}:2375"
+      docker_host         = "tcp://${element(hsdp_container_host.temporal_worker.*.private_ip, count.index)}:2375"
       require_client_auth = "false"
       enable_fluentd      = var.hsdp_product_key == "" ? "false" : "true"
       agent_image         = var.agent_image
