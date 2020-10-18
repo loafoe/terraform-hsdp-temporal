@@ -44,6 +44,10 @@ resource "null_resource" "worker" {
       require_client_auth = "false"
       enable_fluentd      = var.hsdp_product_key == "" ? "false" : "true"
       agent_image         = var.agent_image
+      autoscaler_image    = var.autoscaler_image
+      cartel_token        = var.cartel_token
+      cartel_secret       = var.cartel_secret
+      region              = var.hsdp_region
     })
     destination = "/home/${var.user}/bootstrap-worker.sh"
   }

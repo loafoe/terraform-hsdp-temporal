@@ -43,19 +43,31 @@ variable "app_domain" {
 variable "temporal_image" {
   description = "The Temporal server image to use"
   type        = string
-  default     = "loafoe/auto-setup:0.0.1"
+  default     = "temporalio/auto-setup:1.1.0"
+}
+
+variable "temporal_admin_tools_image" {
+  description = "The Temporal admin tools image to use"
+  type        = string
+  default     = "temporalio/admin-tools:1.1.0"
 }
 
 variable "temporal_web_image" {
   description = "The Temporal web image to use"
   type        = string
-  default     = "temporalio/web:1.0.0"
+  default     = "temporalio/web:1.1.0"
 }
 
 variable "agent_image" {
   description = "Agent image"
   type        = string
   default     = "loafoe/ch-agent:0.0.37"
+}
+
+variable "autoscaler_image" {
+  description = "Autoscaler image"
+  type        = string
+  default     = "loafoe/ch-autoscaler:0.0.2"
 }
 
 variable "postgres_plan" {
@@ -110,4 +122,22 @@ variable "hsdp_custom_field" {
   description = "Post structured JSON message to HSDP Logging custom field"
   type        = string
   default     = "true"
+}
+
+variable "hsdp_region" {
+  description = "The HSDP region of the deployment"
+  type        = string
+  default     = "us-east"
+}
+
+variable "cartel_token" {
+  description = "The Cartel token to use for autoscaling"
+  type        = string
+  default     = ""
+}
+
+variable "cartel_secret" {
+  description = "The Cartel secret to use for autoscaling"
+  type        = string
+  default     = ""
 }

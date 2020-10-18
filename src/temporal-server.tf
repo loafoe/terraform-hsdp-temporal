@@ -37,11 +37,14 @@ resource "null_resource" "server" {
 
   provisioner "file" {
     content = templatefile("${path.module}/scripts/bootstrap.sh.tmpl", {
-      postgres_username   = cloudfoundry_service_key.temporal_db_key.credentials.username
-      postgres_password   = cloudfoundry_service_key.temporal_db_key.credentials.password
-      postgres_hostname   = cloudfoundry_service_key.temporal_db_key.credentials.hostname
-      require_client_auth = "false"
-      temporal_image      = var.temporal_image
+      postgres_username          = cloudfoundry_service_key.temporal_db_key.credentials.username
+      postgres_password          = cloudfoundry_service_key.temporal_db_key.credentials.password
+      postgres_hostname          = cloudfoundry_service_key.temporal_db_key.credentials.hostname
+      require_client_auth        = "false"
+      temporal_image             = var.temporal_image
+      temporal_id                = random_id.id.hex
+      temporal_cli_address       = "${hsdp_container_host.temporal.private_ip}:2181"
+      temporal_admin_tools_image = var.temporal_admin_tools_image
     })
     destination = "/home/${var.user}/bootstrap.sh"
   }

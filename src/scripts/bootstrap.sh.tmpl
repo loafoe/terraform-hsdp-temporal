@@ -4,6 +4,8 @@ kill_temporal() {
   echo Killing temporal...
   docker kill temporal
   docker rm temporal
+  docker kill temporal-admin-tools
+  docker rm temporal-admin-tools
 }
 
 # --env TEMPORAL_TLS_FRONTEND_CERT=/temporal/server_cert.pem \
@@ -23,9 +25,17 @@ start_temporal() {
     --env POSTGRES_USER=${postgres_username} \
     --env POSTGRES_PWD=${postgres_password} \
     --env POSTGRES_SEEDS=${postgres_hostname} \
+    --env TEMPORAL_ID=${temporal_id} \
     -p9200:7233 \
     -p2181:7233 \
     ${temporal_image}
+  echo Starting temporal-admin-tools...
+  docker run -d \
+    --restart always \
+    --name temporal-admin-tools \
+    --env TEMPORAL_ID=${temporal_id} \
+    --env TEMPORAL_CLI_ADDRESS=${temporal_cli_address} \
+    ${temporal_admin_tools_image}
   echo Copying certs...
   docker cp server_cert.pem temporal:/temporal
   docker cp client_cert.pem temporal:/temporal
