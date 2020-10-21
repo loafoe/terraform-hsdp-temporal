@@ -1,6 +1,6 @@
 resource "hsdp_container_host" "temporal_worker" {
   count         = var.workers
-  name          = "temporal-worker-${count.index}-${random_id.id.hex}.dev"
+  name          = "temporal-worker-${random_id.id.hex}-${count.index}.dev"
   volumes       = 1
   volume_size   = var.volume_size
   instance_type = var.worker_instance_type
@@ -48,6 +48,7 @@ resource "null_resource" "worker" {
       cartel_token        = var.cartel_token
       cartel_secret       = var.cartel_secret
       region              = var.hsdp_region
+      name                = "temporal-worker-${random_id.id.hex}-${count.index}.dev"
     })
     destination = "/home/${var.user}/bootstrap-worker.sh"
   }

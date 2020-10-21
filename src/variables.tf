@@ -61,13 +61,13 @@ variable "temporal_web_image" {
 variable "agent_image" {
   description = "Agent image"
   type        = string
-  default     = "loafoe/ch-agent:0.0.37"
+  default     = "loafoe/ch-agent:0.0.48"
 }
 
 variable "autoscaler_image" {
   description = "Autoscaler image"
   type        = string
-  default     = "loafoe/ch-autoscaler:0.0.2"
+  default     = "loafoe/ch-autoscaler:0.0.16"
 }
 
 variable "postgres_plan" {
@@ -91,7 +91,7 @@ variable "worker_instance_type" {
 variable "fluent_bit_image" {
   description = "Fluent-bit image"
   type        = string
-  default     = "loafoe/fluent-bit-out-hsdp:0.0.13"
+  default     = "philipssoftware/fluent-bit-out-hsdp:1.6.0"
 }
 
 variable "hsdp_ingestor_host" {
