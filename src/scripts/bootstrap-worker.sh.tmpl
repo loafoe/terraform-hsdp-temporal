@@ -14,14 +14,23 @@ kill_agent() {
 #    --env TEMPORAL_TLS_CLIENT1_CA_CERT=/temporal/client_cert.pem \
 
 start_agent() {
+  LOG_DRIVER=local
+  if [ ! -z "${enable_fluentd}" ]; then
+    LOG_DRIVER=fluentd
+  fi
   echo Starting agent...
   docker run -d -v agent:/agent \
     --restart always \
     --name agent \
     --env ALLOW_PLAINTEXT_LISTENER=yes \
     --env AGENT_ENABLE_FLUENTD=${enable_fluentd} \
+    --env AGENT_CARTEL_TOKEN=${cartel_token} \
+    --env AGENT_CARTEL_SECRET=${cartel_secret} \
+    --env AGENT_CARTEL_REGION=${region} \
     --env DOCKER_HOST=${docker_host} \
     --env AGENT_TEMPORAL_HOSTPORT=${temporal_hostport} \
+    --env AGENT_NAME=${name} \
+    --log-driver=${LOG_DRIVER} \
     ${agent_image}
   echo Starting autoscaler...
   docker run -d \
@@ -32,6 +41,9 @@ start_agent() {
     --env AUTOSCALER_CARTEL_SECRET=${cartel_secret} \
     --env AUTOSCALER_CARTEL_REGION=${region} \
     --env AUTOSCALER_TEMPORAL_HOSTPORT=${temporal_hostport} \
+    --env AUTOSCALER_NAME=${name} \
+    --env AUTOSCALER_ENABLE_FLUENTD=${enable_fluentd} \
+    --log-driver=${LOG_DRIVER} \
     ${autoscaler_image}
   echo Copying certs...
   docker cp server_cert.pem agent:/agent
