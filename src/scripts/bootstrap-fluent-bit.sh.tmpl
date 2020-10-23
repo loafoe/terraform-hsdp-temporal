@@ -12,6 +12,7 @@ start_fluent_bit() {
      return 0
   fi
   echo Starting fluent-bit ...
+  docker pull ${fluent_bit_image}
   docker run -d \
     --restart always \
     --name fluent-bit \

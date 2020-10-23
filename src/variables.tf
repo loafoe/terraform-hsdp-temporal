@@ -61,7 +61,7 @@ variable "temporal_web_image" {
 variable "agent_image" {
   description = "Agent image"
   type        = string
-  default     = "loafoe/ch-agent:0.0.48"
+  default     = "loafoe/ch-agent:0.0.53"
 }
 
 variable "autoscaler_image" {
@@ -91,7 +91,7 @@ variable "worker_instance_type" {
 variable "fluent_bit_image" {
   description = "Fluent-bit image"
   type        = string
-  default     = "philipssoftware/fluent-bit-out-hsdp:1.6.0"
+  default     = "philipssoftware/fluent-bit-out-hsdp:latest"
 }
 
 variable "hsdp_ingestor_host" {

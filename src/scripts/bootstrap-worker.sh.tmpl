@@ -30,7 +30,7 @@ start_agent() {
     --env DOCKER_HOST=${docker_host} \
     --env AGENT_TEMPORAL_HOSTPORT=${temporal_hostport} \
     --env AGENT_NAME=${name} \
-    --log-driver=${LOG_DRIVER} \
+    --log-driver=${log_driver} \
     ${agent_image}
   echo Starting autoscaler...
   docker run -d \
@@ -43,7 +43,7 @@ start_agent() {
     --env AUTOSCALER_TEMPORAL_HOSTPORT=${temporal_hostport} \
     --env AUTOSCALER_NAME=${name} \
     --env AUTOSCALER_ENABLE_FLUENTD=${enable_fluentd} \
-    --log-driver=${LOG_DRIVER} \
+    --log-driver=${log_driver} \
     ${autoscaler_image}
   echo Copying certs...
   docker cp server_cert.pem agent:/agent

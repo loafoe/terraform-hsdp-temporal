@@ -4,6 +4,7 @@ resource "hsdp_container_host" "temporal_worker" {
   volumes       = 1
   volume_size   = var.volume_size
   instance_type = var.worker_instance_type
+  security_groups = ["analytics"]
 
   user_groups = var.user_groups
 
@@ -43,6 +44,7 @@ resource "null_resource" "worker" {
       docker_host         = "tcp://${element(hsdp_container_host.temporal_worker.*.private_ip, count.index)}:2375"
       require_client_auth = "false"
       enable_fluentd      = var.hsdp_product_key == "" ? "false" : "true"
+      log_driver          = var.hsdp_product_key == "" ? "local" : "fluentd"
       agent_image         = var.agent_image
       autoscaler_image    = var.autoscaler_image
       cartel_token        = var.cartel_token
