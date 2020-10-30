@@ -23,7 +23,7 @@ start_temporal() {
     --restart always \
     --name temporal \
     --env ALLOW_PLAINTEXT_LISTENER=yes \
-    --env DB=postgres \
+    --env DB=postgresql \
     --env DB_PORT=5432 \
     --env AUTO_SETUP=true \
     --env POSTGRES_USER=${postgres_username} \
