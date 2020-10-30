@@ -61,7 +61,7 @@ variable "temporal_web_image" {
 variable "agent_image" {
   description = "Agent image"
   type        = string
-  default     = "loafoe/ch-agent:0.0.53"
+  default     = "loafoe/ch-agent:0.0.58"
 }
 
 variable "autoscaler_image" {
