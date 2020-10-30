@@ -43,19 +43,19 @@ variable "app_domain" {
 variable "temporal_image" {
   description = "The Temporal server image to use"
   type        = string
-  default     = "temporalio/auto-setup:1.1.0"
+  default     = "temporalio/auto-setup:1.2.2"
 }
 
 variable "temporal_admin_tools_image" {
   description = "The Temporal admin tools image to use"
   type        = string
-  default     = "temporalio/admin-tools:1.1.0"
+  default     = "temporalio/admin-tools:1.2.2"
 }
 
 variable "temporal_web_image" {
   description = "The Temporal web image to use"
   type        = string
-  default     = "temporalio/web:1.1.0"
+  default     = "temporalio/web:latest"
 }
 
 variable "agent_image" {
@@ -68,6 +68,12 @@ variable "autoscaler_image" {
   description = "Autoscaler image"
   type        = string
   default     = "loafoe/ch-autoscaler:0.0.16"
+}
+
+variable "fluent_bit_image" {
+  description = "Fluent-bit image"
+  type        = string
+  default     = "philipssoftware/fluent-bit-out-hsdp:latest"
 }
 
 variable "postgres_plan" {
@@ -86,12 +92,6 @@ variable "worker_instance_type" {
   description = "Instance type of worker nodes"
   type        = string
   default     = "m5.xlarge"
-}
-
-variable "fluent_bit_image" {
-  description = "Fluent-bit image"
-  type        = string
-  default     = "philipssoftware/fluent-bit-out-hsdp:latest"
 }
 
 variable "hsdp_ingestor_host" {

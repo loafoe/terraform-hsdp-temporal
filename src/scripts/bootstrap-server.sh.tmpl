@@ -14,6 +14,10 @@ kill_temporal() {
 #    --env TEMPORAL_TLS_CLIENT1_CA_CERT=/temporal/client_cert.pem \
 
 start_temporal() {
+  LOG_DRIVER=local
+  if [ ! -z "${enable_fluentd}" ]; then
+    LOG_DRIVER=fluentd
+  fi
   echo Starting temporal...
   docker run -d -v temporal:/temporal \
     --restart always \
@@ -26,6 +30,7 @@ start_temporal() {
     --env POSTGRES_PWD=${postgres_password} \
     --env POSTGRES_SEEDS=${postgres_hostname} \
     --env TEMPORAL_ID=${temporal_id} \
+    --log-driver=${log_driver} \
     -p9200:7233 \
     -p2181:7233 \
     ${temporal_image}

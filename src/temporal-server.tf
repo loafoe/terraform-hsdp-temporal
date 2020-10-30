@@ -1,5 +1,5 @@
 resource "hsdp_container_host" "temporal" {
-  name          = "temporal-${random_id.id.hex}.dev"
+  name          = "temporal-server-${random_id.id.hex}.dev"
   volumes       = 1
   volume_size   = var.volume_size
   instance_type = var.instance_type
@@ -36,17 +36,31 @@ resource "null_resource" "server" {
   }
 
   provisioner "file" {
-    content = templatefile("${path.module}/scripts/bootstrap.sh.tmpl", {
+    content = templatefile("${path.module}/scripts/bootstrap-server.sh.tmpl", {
       postgres_username          = cloudfoundry_service_key.temporal_db_key.credentials.username
       postgres_password          = cloudfoundry_service_key.temporal_db_key.credentials.password
       postgres_hostname          = cloudfoundry_service_key.temporal_db_key.credentials.hostname
       require_client_auth        = "false"
+      enable_fluentd             = var.hsdp_product_key == "" ? "false" : "true"
+      log_driver                 = var.hsdp_product_key == "" ? "local" : "fluentd"
       temporal_image             = var.temporal_image
       temporal_id                = random_id.id.hex
       temporal_cli_address       = "${hsdp_container_host.temporal.private_ip}:2181"
       temporal_admin_tools_image = var.temporal_admin_tools_image
     })
-    destination = "/home/${var.user}/bootstrap.sh"
+    destination = "/home/${var.user}/bootstrap-server.sh"
+  }
+
+  provisioner "file" {
+    content = templatefile("${path.module}/scripts/bootstrap-fluent-bit.sh.tmpl", {
+      ingestor_host    = var.hsdp_ingestor_host
+      shared_key       = var.hsdp_shared_key
+      secret_key       = var.hsdp_secret_key
+      product_key      = var.hsdp_product_key
+      custom_field     = var.hsdp_custom_field
+      fluent_bit_image = var.fluent_bit_image
+    })
+    destination = "/home/${var.user}/bootstrap-fluent-bit.sh"
   }
 
   provisioner "file" {
@@ -67,8 +81,10 @@ resource "null_resource" "server" {
   provisioner "remote-exec" {
     # Bootstrap script called with private_ip of each node in the cluster
     inline = [
-      "chmod +x /home/${var.user}/bootstrap.sh",
-      "/home/${var.user}/bootstrap.sh"
+      "chmod +x /home/${var.user}/bootstrap-fluent-bit.sh",
+      "/home/${var.user}/bootstrap-fluent-bit.sh",
+      "chmod +x /home/${var.user}/bootstrap-server.sh",
+      "/home/${var.user}/bootstrap-server.sh"
     ]
   }
 }
