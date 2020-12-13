@@ -43,19 +43,19 @@ variable "app_domain" {
 variable "temporal_image" {
   description = "The Temporal server image to use"
   type        = string
-  default     = "temporalio/auto-setup:1.4.0"
+  default     = "temporalio/auto-setup:1.4.1"
 }
 
 variable "temporal_admin_tools_image" {
   description = "The Temporal admin tools image to use"
   type        = string
-  default     = "temporalio/admin-tools:1.4.0"
+  default     = "temporalio/admin-tools:1.4.1"
 }
 
 variable "temporal_web_image" {
   description = "The Temporal web image to use"
   type        = string
-  default     = "temporalio/web:1.4.0"
+  default     = "temporalio/web:1.4.1"
 }
 
 variable "agent_image" {
