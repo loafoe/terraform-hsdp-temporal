@@ -9,7 +9,7 @@ terraform {
     }
     hsdp = {
       source  = "philips-software/hsdp"
-      version = ">= 0.6.7"
+      version = ">= 0.7.0"
     }
     tls = {
       source  = "hashicorp/tls"
