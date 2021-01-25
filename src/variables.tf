@@ -55,7 +55,7 @@ variable "temporal_admin_tools_image" {
 variable "temporal_web_image" {
   description = "The Temporal web image to use"
   type        = string
-  default     = "temporalio/web:1.4.1"
+  default     = "temporalio/web:1.4.0"
 }
 
 variable "agent_image" {
