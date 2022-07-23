@@ -1,6 +1,6 @@
 resource "hsdp_container_host" "temporal_worker" {
-  count           = var.workers
-  name            = "temporal-worker-${random_id.id.hex}-${count.index}.dev"
+  for_each        = toset(var.workers)
+  name            = "temporal-worker-${random_id.id.hex}-${each.key}.dev"
   volumes         = 1
   volume_size     = var.volume_size
   instance_type   = var.worker_instance_type
@@ -11,28 +11,39 @@ resource "hsdp_container_host" "temporal_worker" {
   bastion_host = var.bastion_host
   user         = var.user
   private_key  = var.private_key
+}
+
+resource "ssh_resource" "worker_volumes" {
+  for_each = toset(var.workers)
+
+  bastion_host = var.bastion_host
+  host         = hsdp_container_host.temporal_worker[each.key].private_ip
+  user         = var.user
+  private_key  = var.private_key
 
   commands = [
     "docker volume create agent"
   ]
+
 }
 
-resource "hsdp_container_host_exec" "worker" {
-  count = var.workers
+resource "ssh_resource" "worker" {
+  for_each = toset(var.workers)
 
   triggers = {
-    cluster_instance_ids = element(hsdp_container_host.temporal_worker.*.id, count.index)
+    worker = hsdp_container_host.temporal_worker[each.key]
   }
 
   bastion_host = var.bastion_host
-  host         = element(hsdp_container_host.temporal_worker.*.private_ip, count.index)
-  user         = var.user
-  private_key  = var.private_key
+
+  host        = hsdp_container_host.temporal_worker[each.key].private_ip
+  user        = var.user
+  private_key = var.private_key
 
   file {
     content = templatefile("${path.module}/scripts/bootstrap-worker.sh.tmpl", {
       temporal_hostport   = "${hsdp_container_host.temporal.private_ip}:2181"
-      docker_host         = "tcp://${element(hsdp_container_host.temporal_worker.*.private_ip, count.index)}:2375"
+      docker_host         = "tcp://${hsdp_container_host.temporal_worker[each.key].private_ip}:2375"
       require_client_auth = "false"
       enable_fluentd      = var.hsdp_product_key == "" ? "false" : "true"
       log_driver          = var.hsdp_product_key == "" ? "local" : "fluentd"
@@ -41,7 +52,7 @@ resource "hsdp_container_host_exec" "worker" {
       cartel_token        = var.cartel_token
       cartel_secret       = var.cartel_secret
       region              = var.hsdp_region
-      name                = "temporal-worker-${random_id.id.hex}-${count.index}.dev"
+      name                = "temporal-worker-${random_id.id.hex}-${each.key}.dev"
     })
     destination = "/home/${var.user}/bootstrap-worker.sh"
   }

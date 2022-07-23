@@ -14,16 +14,26 @@ resource "hsdp_container_host" "temporal" {
   bastion_host = var.bastion_host
   user         = var.user
   private_key  = var.private_key
+}
+
+
+resource "ssh_resource" "server_volumes" {
+  host         = hsdp_container_host.temporal.private_ip
+  bastion_host = var.bastion_host
+  user         = var.user
+  private_key  = var.private_key
 
   commands = [
     "docker volume create temporal"
   ]
 }
 
-resource "hsdp_container_host_exec" "server" {
+resource "ssh_resource" "server" {
   triggers = {
     cluster_instance_ids = hsdp_container_host.temporal.id
   }
+
+  depends_on = [ssh_resource.server_volumes]
 
   host         = hsdp_container_host.temporal.private_ip
   bastion_host = var.bastion_host

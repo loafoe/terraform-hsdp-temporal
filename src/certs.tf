@@ -5,7 +5,6 @@ resource "tls_private_key" "key" {
 
 
 resource "tls_self_signed_cert" "server" {
-  key_algorithm   = "RSA"
   private_key_pem = tls_private_key.key.private_key_pem
 
   subject {
@@ -22,7 +21,6 @@ resource "tls_self_signed_cert" "server" {
 }
 
 resource "tls_self_signed_cert" "client" {
-  key_algorithm   = "RSA"
   private_key_pem = tls_private_key.key.private_key_pem
 
   subject {
@@ -39,7 +37,6 @@ resource "tls_self_signed_cert" "client" {
 }
 
 resource "tls_cert_request" "server" {
-  key_algorithm   = "RSA"
   private_key_pem = tls_private_key.key.private_key_pem
 
   subject {
@@ -49,7 +46,6 @@ resource "tls_cert_request" "server" {
 }
 
 resource "tls_cert_request" "client" {
-  key_algorithm   = "RSA"
   private_key_pem = tls_private_key.key.private_key_pem
 
   subject {
@@ -60,7 +56,6 @@ resource "tls_cert_request" "client" {
 
 resource "tls_locally_signed_cert" "server" {
   cert_request_pem   = tls_cert_request.server.cert_request_pem
-  ca_key_algorithm   = "RSA"
   ca_private_key_pem = tls_private_key.key.private_key_pem
   ca_cert_pem        = tls_self_signed_cert.server.cert_pem
 
@@ -76,7 +71,6 @@ resource "tls_locally_signed_cert" "server" {
 
 resource "tls_locally_signed_cert" "client" {
   cert_request_pem   = tls_cert_request.client.cert_request_pem
-  ca_key_algorithm   = "RSA"
   ca_private_key_pem = tls_private_key.key.private_key_pem
   ca_cert_pem        = tls_self_signed_cert.client.cert_pem
 

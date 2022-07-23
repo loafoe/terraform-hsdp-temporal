@@ -84,8 +84,8 @@ variable "postgres_plan" {
 
 variable "workers" {
   description = "Number of worker nodes to spin up"
-  type        = number
-  default     = 1
+  type        = list(string)
+  default     = ["a"]
 }
 
 variable "worker_instance_type" {
